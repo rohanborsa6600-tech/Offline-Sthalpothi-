@@ -1,0 +1,21 @@
+{
+  "name": "स्थळ पोथी",
+  "short_name": "स्थळ पोथी",
+  "start_url": "sthal_pothi_glass_ui.html",
+  "display": "standalone",
+  "background_color": "#23261B",
+  "theme_color": "#3D402D",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/3D402D/FFFFFF?text=SP",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://placehold.co/512x512/3D402D/FFFFFF?text=SP",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
+
