@@ -1,59 +1,33 @@
-const CACHE_NAME = 'sthal-pothi-cache-v1';
+const CACHE_NAME = 'sthalpothi-v1';
 const urlsToCache = [
-  'sthal_pothi_glass_ui.html',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Tiro+Devanagari+Marathi:wght@400;700&display=swap',
-  // Add other font files if the CSS @import brings in more
-  'https://fonts.gstatic.com/s/tirodevanagarimarathi/v6/XRXB3_b4wMvA4a-23S-y-f-b-8-g-gsvX9w.woff2',
-  'https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2'
+  './',
+  './index.html',
+  './manifest.json',
+  // जर तुमच्या प्रोजेक्टमध्ये css किंवा images असतील तर त्यांची नावे खाली ऍड करा:
+  // './style.css',
+  // './script.js',
+  // './icon-192.png',
+  // './icon-512.png'
 ];
 
-self.addEventListener('install', event => {
+// Install Service Worker
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
+      .then((cache) => {
         console.log('Opened cache');
-        const requests = urlsToCache.map(url => new Request(url, { mode: 'cors' }));
-        return Promise.all(requests.map(req => 
-          fetch(req).then(response => {
-            if(response.ok) {
-              return cache.put(req, response);
-            }
-          })
-        ));
+        return cache.addAll(urlsToCache);
       })
   );
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(
-          response => {
-            if(!response || response.status !== 200) {
-              return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
-          }
-        );
-      })
-  );
-});
-
-self.addEventListener('activate', event => {
+// Activate Service Worker (Update Cache)
+self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
+        cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName);
           }
@@ -63,3 +37,16 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Fetch (Serve Offline Content)
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
+  );
+});
